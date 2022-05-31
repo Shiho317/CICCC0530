@@ -1,10 +1,60 @@
 const mongoose = require("mongoose");
 const Blog = require("./models/Blog");
+const Comment = require("./models/Comment");
 const User = require("./models/User")
+const dotenv = require('dotenv')
+
+dotenv.config()
 
 mongoose.connect(
-  "mongodb+srv://andasan:kuishinbo@cluster0.cwwxk.mongodb.net/?retryWrites=true&w=majority"
+  process.env.MONGO_DB
 );
+
+//Insert comment
+const commentCreate = async () => {
+  const user = await User.create({
+    name: "testkun",
+    email: "testkun@mail.com"
+  })
+
+  // //blog
+  const blog = await Blog.create({
+    title: "New Post",
+    slug: "new-post",
+    published: true,
+    content: "This is a new post",
+    tags: ["new", "featured"],
+    author: user._id, 
+  })
+
+  await blog.save()
+}
+
+// commentCreate()
+
+const addComment = async () => {
+
+  const user = await User.findOne({
+    email: "testkun@mail.com"
+  })
+
+  const blog = await Blog.findOne({
+    _id: "62957b2cd6b66309901b6587"
+  })
+
+  const comment = await Blog.findOneAndUpdate(
+    {_id: blog._id},
+    {$set: {
+      comments: await Comment.create({
+        user: user._id,
+        content: "Hello comment",
+        blog: blog._id,
+      })
+    }})
+
+    await comment.save()
+}
+// addComment()
 
 //Insert data
 const blogCreate = async () => {
@@ -96,7 +146,7 @@ const blogUsefulMethods = async () => {
 // blogFind();
 // blogFindOne();
 // blogFindOnewithUser();
-blogUpdate();
+// blogUpdate();
 // blogFindById();
 // blogDelete();
 // blogDeleteMany();

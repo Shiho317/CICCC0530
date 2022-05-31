@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Comment = require('./Comment')
 const { Schema, model, SchemaTypes } = mongoose
 
 const blogSchema = new Schema({
@@ -22,20 +23,13 @@ const blogSchema = new Schema({
     },
     content: String,
     tags: [String],
+    comments: [],
     createdAt: {
         type: Date,
         default: () => Date.now(),
         immutable: true
     },
     updatedAt: Date,
-    comments: [{
-        user: {
-            type: SchemaTypes.ObjectId,
-            ref: 'User',
-            required: true,
-        },
-        content: String
-    }]
 })
 
 blogSchema.pre('save', function(next){
